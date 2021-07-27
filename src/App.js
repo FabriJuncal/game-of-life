@@ -250,191 +250,193 @@ function App() {
   return (
 
     <>
-      <div 
-        style={{
-          width: 100,
-          marginLeft: '20px',
-          display: "grid",
-          gridTemplateColumns: `repeat(2, 200px)`
-        }}>
+      <div className="contenedor">
         <div>
-          {/* Slider para configurar el tiempo de ejecución de la simulación */}
-          <Typography id="discrete-slider-small-steps" gutterBottom>
-          Tiempo de Ejecución
-          </Typography>
-          <Slider
-            defaultValue={300}
-            aria-labelledby="discrete-slider-small-steps"
-            step={100}
-            marks={[
-              {value: 100,label: '0,1s'},
-              {value: 500,label: '0,5s'},
-              {value: 1000,label: '1s'}
-            ]}
-            min={100}
-            max={1000}
-            valueLabelDisplay="auto"
-            onChange={(e) => {
-              actualizarTiempoTurno(e.target.textContent);
-              actualizarRecorrido(false);
-            }}
-          />
-        </div>
-        <div
-          style={{
-            marginLeft: '50px'
-          }}
-        >
-      {/* Campos para configurar el Tamaño de la Grilla */}
-        <Typography id="discrete-slider-small-steps" gutterBottom>
-        Tamaño de la Grilla
-        </Typography>
+          <div 
+            style={{
+              width: 100,
+              marginLeft: '20px',
+              display: "grid",
+              gridTemplateColumns: `repeat(2, 200px)`
+            }}>
+            <div>
+              {/* Slider para configurar el tiempo de ejecución de la simulación */}
+              <Typography id="discrete-slider-small-steps" gutterBottom>
+              Tiempo de Ejecución
+              </Typography>
+              <Slider
+                defaultValue={300}
+                aria-labelledby="discrete-slider-small-steps"
+                step={100}
+                marks={[
+                  {value: 100,label: '0,1s'},
+                  {value: 500,label: '0,5s'},
+                  {value: 1000,label: '1s'}
+                ]}
+                min={100}
+                max={1000}
+                valueLabelDisplay="auto"
+                onChange={(e) => {
+                  actualizarTiempoTurno(e.target.textContent);
+                  actualizarRecorrido(false);
+                }}
+              />
+            </div>
+            <div
+              style={{
+                marginLeft: '50px'
+              }}
+            >
+          {/* Campos para configurar el Tamaño de la Grilla */}
+            <Typography id="discrete-slider-small-steps" gutterBottom>
+            Tamaño de la Grilla
+            </Typography>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: `repeat(2, 100px)`
+                }}
+              >
+                <TextField id="n-filas" label="Filas"
+                  type="number"
+                  value={cantFila}
+                  style={{
+                    width: 90
+                  }}
+                  onChange={(e) => {
+                    actualizarTamanioGrilla(cantColumnas, e.target.value ? e.target.value : 0);
+                  }}
+                />
+                <TextField  id="n-columnas" label="Columnas" 
+                  type="number"
+                  value={cantColumnas}
+                  style={{
+                    width: 90,
+                    marginLeft: '10px'
+                  }}
+                  onChange={(e) => {
+                    actualizarTamanioGrilla(e.target.value ? e.target.value : 0, cantFila);
+                  }}
+                />
+              </div>
+            </div>
+          </div>        
+
+          {/* Botón de ejecución de Simulación
+              Al hacer click sobre el botón este actualiza su estado al estado contrario en la que se encuentra e itera el texto 
+              "Parar": cuando el estado del botón sea "true"
+              "Empezar": cuando el estado del botón sea "False"
+          */}
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(2, 100px)`
+              margin: '5px'
             }}
           >
-            <TextField id="n-filas" label="Filas"
-              type="number"
-              value={cantFila}
-              style={{
-                width: 90
+            <Button variant="contained" color="primary"
+              style={{width: 100, margin: '3px'}}
+              onClick={()=>{actEstadoBtnSimulacion()}}
+            >{recorrido ? 'Parar' : 'Empezar'}</Button>
+
+            {/* Botón Restablecer Células y dimensión de la Grilla
+                Al hacer click sobre el botón, este restablece las células y el tamaño de la grilla a los valores predefinidos al inicio
+            */}
+            <Button variant="contained" color="primary"
+              style={{width: 115, margin: '3px'}}
+              onClick={()=>{
+                actualizarTamanioGrilla(50,30)
               }}
-              onChange={(e) => {
-                actualizarTamanioGrilla(cantColumnas, e.target.value ? e.target.value : 0);
+            >Restablecer</Button>
+
+            {/* Slot 1 para cargar o almacenar la Grilla en el Local Storage
+                Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
+                y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
+            */}
+            <Button variant={grillaSeleccionado1 ? 'contained' : 'outlined'} color='primary'
+              style={{width: 100, margin: '3px'}}
+              onClick={()=>{
+                if(grillaSeleccionado1){
+                  guardarCargarGrilla(1, 'guardar');
+                }else if(!grillaSeleccionado1 && grillaGuardada1.length === 0){
+                  guardarCargarGrilla(1, 'guardar');
+                }else if(!grillaSeleccionado1 && grillaGuardada1.length > 0){
+                  guardarCargarGrilla(1, 'cargar');
+                }
+                actGrillaSeleccionado1(true);
+                actGrillaSeleccionado2(false);
+                actGrillaSeleccionado3(false);
+
               }}
-            />
-            <TextField  id="n-columnas" label="Columnas" 
-              type="number"
-              value={cantColumnas}
-              style={{
-                width: 90,
-                marginLeft: '10px'
+            >{grillaSeleccionado1 ? 'Guardar 1' : 'Cargar 1'}</Button>
+
+            {/* Slot 2 para cargar o almacenar la Grilla en el Local Storage
+                Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
+                y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
+            */}
+            <Button variant={grillaSeleccionado2 ? 'contained' : 'outlined'} color='primary'
+              style={{width: 100, margin: '3px'}}
+              onClick={()=>{
+                if(grillaSeleccionado2){
+                  guardarCargarGrilla(2, 'guardar');
+                }else if(!grillaSeleccionado2 && grillaGuardada2.length === 0){
+                  guardarCargarGrilla(2, 'guardar');
+                }else if(!grillaSeleccionado2 && grillaGuardada2.length > 0){
+                  guardarCargarGrilla(2, 'cargar');
+                }
+                actGrillaSeleccionado1(false);
+                actGrillaSeleccionado2(true);
+                actGrillaSeleccionado3(false);
+                actualizarRecorrido(false);
               }}
-              onChange={(e) => {
-                actualizarTamanioGrilla(e.target.value ? e.target.value : 0, cantFila);
+              >{grillaSeleccionado2 ? 'Guardar 2' : (grillaGuardada2.length === 0 ? 'Guardar 2' : 'Cargar 2') }</Button>
+
+            {/* Slot 3 para cargar o almacenar la Grilla en el Local Storage
+                Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
+                y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
+            */}
+            <Button variant={grillaSeleccionado3 ? 'contained' : 'outlined'} color='primary'
+              style={{width: 100, margin: '3px'}}
+              onClick={()=>{
+                if(grillaSeleccionado3){
+                  guardarCargarGrilla(3, 'guardar');
+                }else if(!grillaSeleccionado3 && grillaGuardada3.length === 0){
+                  guardarCargarGrilla(3, 'guardar');
+                }else if(!grillaSeleccionado3 && grillaGuardada3.length > 0){
+                  guardarCargarGrilla(3, 'cargar');
+                }
+                actGrillaSeleccionado1(false);
+                actGrillaSeleccionado2(false);
+                actGrillaSeleccionado3(true);
+                actualizarRecorrido(false);
               }}
-            />
+              >{grillaSeleccionado3 ? 'Guardar 3' : (grillaGuardada3.length === 0 ? 'Guardar 3' : 'Cargar 3') }</Button>
           </div>
         </div>
-        
-      </div>
-
-      {/* Botón de ejecución de Simulación
-          Al hacer click sobre el botón este actualiza su estado al estado contrario en la que se encuentra e itera el texto 
-          "Parar": cuando el estado del botón sea "true"
-          "Empezar": cuando el estado del botón sea "False"
-      */}
-      <div
-        style={{
-          margin: '5px'
-        }}
-      >
-        <Button variant="contained" color="primary"
-          style={{width: 100, margin: '3px'}}
-          onClick={()=>{actEstadoBtnSimulacion()}}
-        >{recorrido ? 'Parar' : 'Empezar'}</Button>
-
-        {/* Botón Restablecer Células y dimensión de la Grilla
-            Al hacer click sobre el botón, este restablece las células y el tamaño de la grilla a los valores predefinidos al inicio
-        */}
-        <Button variant="contained" color="primary"
-          style={{width: 115, margin: '3px'}}
-          onClick={()=>{
-            actualizarTamanioGrilla(50,30)
+        {/* Grilla donde se verán el conjunto de células */}
+        <div
+          // Una vez que tenemos la 1er columna armada utilizamos Grid para repetir/crear la cantidad de Columnas que se asignó
+          style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${cantColumnas}, 25px)`
           }}
-        >Restablecer</Button>
-
-        {/* Slot 1 para cargar o almacenar la Grilla en el Local Storage
-            Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
-            y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
-        */}
-        <Button variant={grillaSeleccionado1 ? 'contained' : 'outlined'} color='primary'
-          style={{width: 100, margin: '3px'}}
-          onClick={()=>{
-            if(grillaSeleccionado1){
-              guardarCargarGrilla(1, 'guardar');
-            }else if(!grillaSeleccionado1 && grillaGuardada1.length === 0){
-              guardarCargarGrilla(1, 'guardar');
-            }else if(!grillaSeleccionado1 && grillaGuardada1.length > 0){
-              guardarCargarGrilla(1, 'cargar');
-            }
-            actGrillaSeleccionado1(true);
-            actGrillaSeleccionado2(false);
-            actGrillaSeleccionado3(false);
-
-          }}
-        >{grillaSeleccionado1 ? 'Guardar 1' : 'Cargar 1'}</Button>
-
-        {/* Slot 2 para cargar o almacenar la Grilla en el Local Storage
-            Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
-            y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
-        */}
-        <Button variant={grillaSeleccionado2 ? 'contained' : 'outlined'} color='primary'
-          style={{width: 100, margin: '3px'}}
-          onClick={()=>{
-            if(grillaSeleccionado2){
-              guardarCargarGrilla(2, 'guardar');
-            }else if(!grillaSeleccionado2 && grillaGuardada2.length === 0){
-              guardarCargarGrilla(2, 'guardar');
-            }else if(!grillaSeleccionado2 && grillaGuardada2.length > 0){
-              guardarCargarGrilla(2, 'cargar');
-            }
-            actGrillaSeleccionado1(false);
-            actGrillaSeleccionado2(true);
-            actGrillaSeleccionado3(false);
-            actualizarRecorrido(false);
-          }}
-          >{grillaSeleccionado2 ? 'Guardar 2' : (grillaGuardada2.length === 0 ? 'Guardar 2' : 'Cargar 2') }</Button>
-
-        {/* Slot 3 para cargar o almacenar la Grilla en el Local Storage
-            Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
-            y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
-        */}
-        <Button variant={grillaSeleccionado3 ? 'contained' : 'outlined'} color='primary'
-          style={{width: 100, margin: '3px'}}
-          onClick={()=>{
-            if(grillaSeleccionado3){
-              guardarCargarGrilla(3, 'guardar');
-            }else if(!grillaSeleccionado3 && grillaGuardada3.length === 0){
-              guardarCargarGrilla(3, 'guardar');
-            }else if(!grillaSeleccionado3 && grillaGuardada3.length > 0){
-              guardarCargarGrilla(3, 'cargar');
-            }
-            actGrillaSeleccionado1(false);
-            actGrillaSeleccionado2(false);
-            actGrillaSeleccionado3(true);
-            actualizarRecorrido(false);
-          }}
-          >{grillaSeleccionado3 ? 'Guardar 3' : (grillaGuardada3.length === 0 ? 'Guardar 3' : 'Cargar 3') }</Button>
-      </div>
-
-      {/* Grilla donde se verán el conjunto de células */}
-      <div
-        // Una vez que tenemos la 1er columna armada utilizamos Grid para repetir/crear la cantidad de Columnas que se asignó
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${cantColumnas}, 25px)`
-        }}
-      >
-        {/* Iteramos sobre el array "grilla" y "filas" para poder ir agregando cada célula en cada fila y de este modo armar una columna */}
-        {grilla.map((filas, i) => 
-          filas.map((columnas, j) => (
-            <div
-              key={`${i}-${j}`}
-              onClick={()=>{actualizarEstadoGrilla(i,j)}} // Al hacer click en una célula, esta muere o revive dependiendo del estado actual
-              style={{
-                width: 20,
-                height: 20,
-                backgroundColor: grilla[i][j] ? "#007bff" : undefined, // Si el valor de la posición es 1, se pinta la celula de color Azul
-                border: "solid 1px #007bff",
-                borderRadius: '20px',
-                margin: '3px 5px'
-              }}
-            />
-          ))
-        )}
+        >
+          {/* Iteramos sobre el array "grilla" y "filas" para poder ir agregando cada célula en cada fila y de este modo armar una columna */}
+          {grilla.map((filas, i) => 
+            filas.map((columnas, j) => (
+              <div
+                key={`${i}-${j}`}
+                onClick={()=>{actualizarEstadoGrilla(i,j)}} // Al hacer click en una célula, esta muere o revive dependiendo del estado actual
+                style={{
+                  width: 20,
+                  height: 20,
+                  backgroundColor: grilla[i][j] ? "#007bff" : undefined, // Si el valor de la posición es 1, se pinta la celula de color Azul
+                  border: "solid 1px #007bff",
+                  borderRadius: '20px',
+                  margin: '3px 5px'
+                }}
+              />
+            ))
+          )}
+        </div>
       </div>
     </>
   );
