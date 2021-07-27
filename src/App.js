@@ -1,37 +1,13 @@
-import React, {useState, useRef, useEffect, useCallback} from "react";
+import React, {useState, useRef, useCallback} from "react";
 // La librería Immer ayudará a seguir el paradigma de datos inmutables
 // y hará que la actualización de un Estado sea mucho mas sencilla
 import produce from "immer";
 // La librería Material UI se utilizará para tener un estilo definido para los botónes
 import Button from '@material-ui/core/Button';
-
-import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import TextField from '@material-ui/core/TextField';
 
-
-
-// Valores para los Labels del componente Slider
-const marks = [
-  {
-    value: 100,
-    label: '0,1s',
-  },
-  {
-    value: 500,
-    label: '0,5s',
-  },
-  {
-    value: 1000,
-    label: '1s',
-  },
-];
-
-
-// Se define el tamaño de la grilla
-// const nroColumnas = 50;
-// const nroFilas = 30;
 
 // Se define las operaciones para poder indentificar las células vecinas
 // Si realizamos una suma con cada uno de estos array con la posición en la que estamos ubicados, obtendremos las posiciones de las 8 células vecinas que puede tener cada una de estas
@@ -55,10 +31,13 @@ const operaciones = [
 
 function App() {
 // ===============================================================================================================================
-  /* Este código crea las Columnas y Filas con un valor 0 para cada Célula (Es decir, carga la grilla con células muertas)*/
+  /* 
+    Este código crea las Columnas y Filas con un valor 0 para cada Célula (Es decir, carga la grilla con células muertas).
+    Tambien carga las grillas almacenadas en el Local Storage.
+    Si una grilla se encuentra almacenada en el Slot 1, esta se cargará de forma predeterminada al recargar la página.
+  */
 
-  // Cargamos los datos almacenados en el Local Storage
-
+  // Cargamos las grillas almacenadas en el Local Storage
   let grillaGuardada1 = JSON.parse(localStorage.getItem('grilla1')) ? JSON.parse(localStorage.getItem('grilla1')) : [];
   let grillaGuardada2 = JSON.parse(localStorage.getItem('grilla2')) ? JSON.parse(localStorage.getItem('grilla2')) : [];
   let grillaGuardada3 = JSON.parse(localStorage.getItem('grilla3')) ? JSON.parse(localStorage.getItem('grilla3')) : [];
@@ -81,18 +60,19 @@ function App() {
   let cantColumnasInicial = grillaGuardada1.length > 0 ? grillaGuardada1[0].length : 50;
   let cantFilaInicial = grillaGuardada1.length  > 0 ? grillaGuardada1.length : 30;
 
-  // Iteramos sobre la cantidad de Filas definidas para ir cargando las columnas en cada fila 
+  // Iteramos sobre la cantidad de Filas definidas para ir cargando las columnas en cada una de las filas
   for (let i = 0; i < cantFilaInicial; i++){
 
-    // Creamos la cantidad de columnas asignadas con el valor 0
+    // A cada valor del array de Columnas le agrega el valor 0
     let arrayColumnas = Array.from(Array(cantColumnasInicial), () => 0);
     // Cargamos las Columnas dentro de cada Fila y de esta manera se va armando la grilla
     grillaBase.push(arrayColumnas);
   }
 
+  // En el caso que se encuentre la grilla 1 almacenada en el Local Storage, se carga automaticamente
   if(grillaGuardada1.length > 0){
     grillaAux = grillaGuardada1;
-  }else{
+  }else{ // Sino se carga la grilla predefinida sin células vivas
     grillaAux = grillaBase;
   }
   // ===============================================================================================================================
@@ -109,11 +89,6 @@ function App() {
 
   const recorridoRef = useRef(recorrido);
   recorridoRef.current = recorrido;
-
-  // useEffect(() => {
-  //   actualizarCantColumnas(cantColumnas);
-  //   actualizarCantFila(cantFila);
-  // }, [cantColumnas,cantFila, grillaSeleccionado1]);
 
   // La función correrSimulación() ejecuta la simulación de la evolución de las células por turno
   // Se utiliza el Hook "useCallback" para almacenar la función en memoria y no volver a cargar la función cada vez que React renderice los componentes, ya que la función contiene muchos calculos.
@@ -171,22 +146,24 @@ function App() {
     },
     [cantColumnas,cantFila, tiempoTurno]);
 
-// ===============================================================================================================================
+  // ===============================================================================================================================
   /*Definición de Funciones*/
 
+  // Función que se utiliza para actualizar el tamaño de la grilla cada vez que se modifican los valores de las Filas y Columnas
   const actualizarTamanioGrilla = (p_cantColumnas, p_cantFilas, p_grilla = []) => {
-        /* Este código crea las Columnas y Filas con un valor 0 para cada Célula (Es decir, carga la grilla con células muertas)*/
+  
+        // Se pausa la simulación para no generar ningún error al modificar las dimensiones de la grilla
         actualizarRecorrido(false);
 
         grillaBase = p_grilla;
         
-
         let nroColumnas = parseInt(p_cantColumnas != null ? p_cantColumnas : 0);
         let nroFilas = parseInt(p_cantFilas != null ? p_cantFilas : 0);
 
         actualizarCantColumnas(nroColumnas);
         actualizarCantFila(nroFilas);
 
+        // Si se pasa como parametro una grilla cargada, no se vuelven a generar las Filas y Columnas
         if( grillaBase.length === 0){
           // Iteramos sobre el total de células que se obtendrá de la multiplicación de las filas y las columnas
           for (let i = 0; i < (nroFilas); i++){
@@ -205,7 +182,7 @@ function App() {
 
   }
 
-  // Función que utilizamos para actualizar el estado de la Grilla (Es decir, con esta función podemos seleccionar cada célular e ir reviviendolas o matandolas)
+  // Función que se utiliza para actualizar el estado de la Grilla (Es decir, con esta función podemos seleccionar cada célular e ir reviviendolas o matandolas)
   const actualizarEstadoGrilla = (i,j) => {
       // Utilizamos la función "produce" de la librería "Immer" para actualizar el estado "grilla" de una manera muy sensilla
       const nuevaGrilla = produce(grilla, grillaCopia => {
@@ -215,6 +192,7 @@ function App() {
       actualizarGrilla(nuevaGrilla);
   }
 
+  // Función que Inicia o Para la Simulación
   const actEstadoBtnSimulacion = () => {
     actualizarRecorrido(!recorrido);
     if(!recorrido){
@@ -223,6 +201,7 @@ function App() {
     }
   }
 
+  // Función que Carga o Almacena las grillas en el Local Storage según el Slot que se haya seleccionado
   const guardarCargarGrilla = (nroGrillaGuardada, operacion) => {
 
     if(operacion === 'guardar'){
@@ -267,25 +246,19 @@ function App() {
     }
   }
 
-  // Estilos para el componente Slider
-  const estiloSlider = makeStyles({
-    root: {
-      width: 100,
-      marginLeft: '20px',
-      display: "grid",
-      gridTemplateColumns: `repeat(2, 200px)`
-    },
-  });
-
-  // Se declara la constante con los estilos que tendrá el componente Slider
-  const claseSlider = estiloSlider();
-// ===============================================================================================================================
+  // ===============================================================================================================================
   return (
 
     <>
-
-      <div className={claseSlider.root}>
+      <div 
+        style={{
+          width: 100,
+          marginLeft: '20px',
+          display: "grid",
+          gridTemplateColumns: `repeat(2, 200px)`
+        }}>
         <div>
+          {/* Slider para configurar el tiempo de ejecución de la simulación */}
           <Typography id="discrete-slider-small-steps" gutterBottom>
           Tiempo de Ejecución
           </Typography>
@@ -293,13 +266,16 @@ function App() {
             defaultValue={300}
             aria-labelledby="discrete-slider-small-steps"
             step={100}
-            marks={marks}
+            marks={[
+              {value: 100,label: '0,1s'},
+              {value: 500,label: '0,5s'},
+              {value: 1000,label: '1s'}
+            ]}
             min={100}
             max={1000}
             valueLabelDisplay="auto"
             onChange={(e) => {
               actualizarTiempoTurno(e.target.textContent);
-              // actualizarGrilla(grillaBase);
               actualizarRecorrido(false);
             }}
           />
@@ -309,6 +285,7 @@ function App() {
             marginLeft: '50px'
           }}
         >
+      {/* Campos para configurar el Tamaño de la Grilla */}
         <Typography id="discrete-slider-small-steps" gutterBottom>
         Tamaño de la Grilla
         </Typography>
@@ -320,20 +297,16 @@ function App() {
           >
             <TextField id="n-filas" label="Filas"
               type="number"
-              // defaultValue={cantFila}
               value={cantFila}
               style={{
                 width: 90
               }}
               onChange={(e) => {
                 actualizarTamanioGrilla(cantColumnas, e.target.value ? e.target.value : 0);
-                // actualizarGrilla(grillaBase);
-                // actualizarRecorrido(false);
               }}
             />
             <TextField  id="n-columnas" label="Columnas" 
               type="number"
-              // defaultValue={cantColumnas}
               value={cantColumnas}
               style={{
                 width: 90,
@@ -341,8 +314,6 @@ function App() {
               }}
               onChange={(e) => {
                 actualizarTamanioGrilla(e.target.value ? e.target.value : 0, cantFila);
-                // actualizarGrilla(grillaBase);
-                // actualizarRecorrido(false);
               }}
             />
           </div>
@@ -365,18 +336,20 @@ function App() {
           onClick={()=>{actEstadoBtnSimulacion()}}
         >{recorrido ? 'Parar' : 'Empezar'}</Button>
 
-        {/* Botón de ejecución de Simulación
-            Al hacer click sobre el botón este actualiza su estado al estado contrario en la que se encuentra e itera el texto 
-            "Parar": cuando el estado del botón sea "true"
-            "Empezar": cuando el estado del botón sea "False"
+        {/* Botón Restablecer Células y dimensión de la Grilla
+            Al hacer click sobre el botón, este restablece las células y el tamaño de la grilla a los valores predefinidos al inicio
         */}
         <Button variant="contained" color="primary"
-          style={{width: 100, margin: '3px'}}
+          style={{width: 115, margin: '3px'}}
           onClick={()=>{
             actualizarTamanioGrilla(50,30)
           }}
-        >Reiniciar</Button>
+        >Restablecer</Button>
 
+        {/* Slot 1 para cargar o almacenar la Grilla en el Local Storage
+            Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
+            y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
+        */}
         <Button variant={grillaSeleccionado1 ? 'contained' : 'outlined'} color='primary'
           style={{width: 100, margin: '3px'}}
           onClick={()=>{
@@ -394,6 +367,10 @@ function App() {
           }}
         >{grillaSeleccionado1 ? 'Guardar 1' : 'Cargar 1'}</Button>
 
+        {/* Slot 2 para cargar o almacenar la Grilla en el Local Storage
+            Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
+            y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
+        */}
         <Button variant={grillaSeleccionado2 ? 'contained' : 'outlined'} color='primary'
           style={{width: 100, margin: '3px'}}
           onClick={()=>{
@@ -411,8 +388,11 @@ function App() {
           }}
           >{grillaSeleccionado2 ? 'Guardar 2' : (grillaGuardada2.length === 0 ? 'Guardar 2' : 'Cargar 2') }</Button>
 
-        
-          <Button variant={grillaSeleccionado3 ? 'contained' : 'outlined'} color='primary'
+        {/* Slot 3 para cargar o almacenar la Grilla en el Local Storage
+            Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
+            y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
+        */}
+        <Button variant={grillaSeleccionado3 ? 'contained' : 'outlined'} color='primary'
           style={{width: 100, margin: '3px'}}
           onClick={()=>{
             if(grillaSeleccionado3){
@@ -429,6 +409,8 @@ function App() {
           }}
           >{grillaSeleccionado3 ? 'Guardar 3' : (grillaGuardada3.length === 0 ? 'Guardar 3' : 'Cargar 3') }</Button>
       </div>
+
+      {/* Grilla donde se verán el conjunto de células */}
       <div
         // Una vez que tenemos la 1er columna armada utilizamos Grid para repetir/crear la cantidad de Columnas que se asignó
         style={{
