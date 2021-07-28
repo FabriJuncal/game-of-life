@@ -197,10 +197,10 @@ function App() {
 
     // Si se pasa como parametro una grilla cargada, no se vuelven a generar las Filas y Columnas
     if( grillaBase.length === 0){
-      // Iteramos sobre el total de células que se obtendrá de la multiplicación de las filas y las columnas
+      // Iteramos sobre el la cantidad de Filas
       for (let i = 0; i < (nroFilas); i++){
   
-        // Creamos la cantidad de columnas asignadas con el valor 0
+        // Creamos la cantidad de Columnas asignadas con el valor 0
         let arrayColumnas = Array.from(Array(nroColumnas), () => 0);
         // Cargamos las Columnas dentro de cada Fila
         grillaBase.push(arrayColumnas);
