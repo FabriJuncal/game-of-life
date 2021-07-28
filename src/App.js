@@ -179,6 +179,14 @@ function App() {
     // Se pausa la simulación para no generar ningún error al modificar las dimensiones de la grilla
     actualizarRecorrido(false);
 
+    // Si la cantidad de columnas o filas es igual a cero, oculta la grilla de simulación
+    // en caso contrario, lo muestra
+    if(p_cantColumnas === 0 || p_cantFilas === 0){
+      document.getElementById('grillaSimulacion').hidden = true
+    }else{
+      document.getElementById('grillaSimulacion').hidden = false
+    }
+
     grillaBase = p_grilla;
     
     let nroColumnas = parseInt(p_cantColumnas != null ? p_cantColumnas : 0);
@@ -195,9 +203,7 @@ function App() {
         // Creamos la cantidad de columnas asignadas con el valor 0
         let arrayColumnas = Array.from(Array(nroColumnas), () => 0);
         // Cargamos las Columnas dentro de cada Fila
-
         grillaBase.push(arrayColumnas);
-
         actualizarGrilla(grillaBase);
       }
     }else{
@@ -296,6 +302,7 @@ function App() {
                 Al hacer click sobre el botón, este detecta si se se quiere empezar la simulación o se quiere parar
             */}
               <Button variant="contained" color="primary"
+                disabled={cantColumnas === 0 || cantFila === 0 ? true : false}
                 onClick={()=>{actEstadoBtnSimulacion()}}
                 style={{width: '98.4px'}}
               >{recorrido ? 'Parar' : 'Empezar'}</Button>
@@ -305,6 +312,7 @@ function App() {
                 Al hacer click sobre el botón, se avanza al siguiente turno en la simulación
             */}
               <Button variant="contained" color="primary"
+                  disabled={cantColumnas === 0 || cantFila === 0 ? true : false}
                   onClick={()=>{
                     actualizarRecorrido(false);
                     recorridoRef.current = true;
@@ -457,7 +465,7 @@ function App() {
             </Typography>
           </Grid>  
         <Grid container direction="column" alignContent="center">
-          <Grid  item xs>
+          <Grid id="grillaSimulacion"  item xs>
             {/* Grilla donde se verán el conjunto de células */}
             <div
               // Una vez que tenemos la 1er columna armada utilizamos Grid para repetir/crear la cantidad de Columnas que se asignó
