@@ -2,7 +2,7 @@ import React, {useState, useRef, useCallback} from "react";
 // La librería Immer ayudará a seguir el paradigma de datos inmutables
 // y hará que la actualización de un Estado sea mucho mas sencilla
 import produce from "immer";
-// La librería Material UI se utilizará para tener un estilo definido para los botónes
+// La librería Material UI se utilizará para tener un estilo definido para los componentes
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
