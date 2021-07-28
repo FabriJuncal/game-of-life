@@ -290,7 +290,7 @@ function App() {
         <Grid container direction="row" justifyContent="space-evenly" alignItems="center">
           <Grid container direction="row" item xs={3} spacing={0}>
             <Grid item xs={4}
-            style={{marginRight: '-24px'}}
+            style={{marginRight: '-10px'}}
             >
             {/* Botón de Empezar/Parar simulación
                 Al hacer click sobre el botón, este detecta si se se quiere empezar la simulación o se quiere parar
