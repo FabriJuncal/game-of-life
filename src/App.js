@@ -2,7 +2,7 @@ import React, {useState, useRef, useCallback} from "react";
 // La librería Immer ayudará a seguir el paradigma de datos inmutables
 // y hará que la actualización de un Estado sea mucho mas sencilla
 import produce from "immer";
-// La librería Material UI se utilizará para tener un estilo definido para los botónes
+// La librería Material UI se utilizará para tener un estilo definido para los componentes
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
@@ -166,6 +166,14 @@ function App() {
     // Se pausa la simulación para no generar ningún error al modificar las dimensiones de la grilla
     actualizarRecorrido(false);
 
+    // Si la cantidad de columnas o filas es igual a cero, oculta la grilla de simulación
+    // en caso contrario, lo muestra
+    if(p_cantColumnas === 0 || p_cantFilas === 0){
+      document.getElementById('grillaSimulacion').hidden = true
+    }else{
+      document.getElementById('grillaSimulacion').hidden = false
+    }
+
     grillaBase = p_grilla;
     
     let nroColumnas = parseInt(p_cantColumnas != null ? p_cantColumnas : 0);
@@ -176,15 +184,13 @@ function App() {
 
     // Si se pasa como parametro una grilla cargada, no se vuelven a generar las Filas y Columnas
     if( grillaBase.length === 0){
-      // Iteramos sobre el total de células que se obtendrá de la multiplicación de las filas y las columnas
+      // Iteramos sobre el la cantidad de Filas
       for (let i = 0; i < (nroFilas); i++){
   
-        // Creamos la cantidad de columnas asignadas con el valor 0
+        // Creamos la cantidad de Columnas asignadas con el valor 0
         let arrayColumnas = Array.from(Array(nroColumnas), () => 0);
         // Cargamos las Columnas dentro de cada Fila
-
         grillaBase.push(arrayColumnas);
-
         actualizarGrilla(grillaBase);
       }
     }else{
@@ -239,12 +245,13 @@ function App() {
         <Grid container direction="row" justifyContent="space-evenly" alignItems="center">
           <Grid container direction="row" item xs={3} spacing={0}>
             <Grid item xs={4}
-            style={{marginRight: '-24px'}}
+            style={{marginRight: '-10px'}}
             >
             {/* Botón de Empezar/Parar simulación
                 Al hacer click sobre el botón, este detecta si se se quiere empezar la simulación o se quiere parar
             */}
               <Button variant="contained" color="primary"
+                disabled={cantColumnas === 0 || cantFila === 0 ? true : false}
                 onClick={()=>{actEstadoBtnSimulacion()}}
                 style={{width: '98.4px'}}
               >{recorrido ? 'Parar' : 'Empezar'}</Button>
@@ -254,6 +261,7 @@ function App() {
                 Al hacer click sobre el botón, se avanza al siguiente turno en la simulación
             */}
               <Button variant="contained" color="primary"
+                  disabled={cantColumnas === 0 || cantFila === 0 ? true : false}
                   onClick={()=>{
                     actualizarRecorrido(false);
                     recorridoRef.current = true;
@@ -382,7 +390,7 @@ function App() {
             </Typography>
           </Grid>  
         <Grid container direction="column" alignContent="center">
-          <Grid  item xs>
+          <Grid id="grillaSimulacion"  item xs>
             {/* Grilla donde se verán el conjunto de células */}
             <div
               // Una vez que tenemos la 1er columna armada utilizamos Grid para repetir/crear la cantidad de Columnas que se asignó
