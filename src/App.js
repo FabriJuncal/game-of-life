@@ -9,7 +9,7 @@ import Slider from '@material-ui/core/Slider';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-
+// Botones personalizados de Guardar/Cargar Grilla
 import BtnGuardarCargar from '../src/components/BtnGuardarCargar';
 
 // Se define las operaciones para poder indentificar las células vecinas
@@ -42,25 +42,12 @@ function App() {
 
   // Cargamos las grillas almacenadas en el Local Storage
   let grillaGuardada1 = JSON.parse(localStorage.getItem('grilla1')) ? JSON.parse(localStorage.getItem('grilla1')) : [];
-  let grillaGuardada2 = JSON.parse(localStorage.getItem('grilla2')) ? JSON.parse(localStorage.getItem('grilla2')) : [];
-  let grillaGuardada3 = JSON.parse(localStorage.getItem('grilla3')) ? JSON.parse(localStorage.getItem('grilla3')) : [];
-
   let nroTurno1 = localStorage.getItem('nroTurno1') ? parseInt(localStorage.getItem('nroTurno1')) : 0;
-  let nroTurno2 = localStorage.getItem('nroTurno2') ? parseInt(localStorage.getItem('nroTurno2')) : 0;
-  let nroTurno3 = localStorage.getItem('nroTurno3') ? parseInt(localStorage.getItem('nroTurno3')) : 0;
 
   let nroTurnoActual = nroTurno1;
 
   if(grillaGuardada1.length === 0){
     localStorage.setItem('grilla1', JSON.stringify([]));
-  }
-
-  if(grillaGuardada2.length === 0){
-    localStorage.setItem('grilla2', JSON.stringify([]));
-  }
-
-  if(grillaGuardada3.length === 0){
-    localStorage.setItem('grilla3', JSON.stringify([]));
   }
 
   let grillaBase = [];
@@ -229,56 +216,18 @@ function App() {
   const guardarCargarGrilla = (nroGrillaGuardada, operacion) => {
 
     if(operacion === 'guardar'){
-      if(nroGrillaGuardada === 1){
-        localStorage.setItem('grilla1', JSON.stringify(grilla));
-        localStorage.setItem('nroTurno1', contadorTurnos);
-      }
-  
-      if(nroGrillaGuardada === 2){
-        localStorage.setItem('grilla2', JSON.stringify(grilla));
-        localStorage.setItem('nroTurno2', contadorTurnos);
-      }
-  
-      if(nroGrillaGuardada === 3){
-        localStorage.setItem('grilla3', JSON.stringify(grilla));
-        localStorage.setItem('nroTurno3', contadorTurnos);
-      }
+        localStorage.setItem('grilla'+nroGrillaGuardada, JSON.stringify(grilla));
+        localStorage.setItem('nroTurno'+nroGrillaGuardada, contadorTurnos);
     }
 
     if(operacion === 'cargar'){
-
-      let nroColumnas;
-      let nroFila
-      ;
-      if(nroGrillaGuardada === 1){
-        grillaGuardada1 = JSON.parse(localStorage.getItem('grilla1'));
-        nroTurno1 = parseInt(localStorage.getItem('nroTurno1'));
-        nroTurnoActual = nroTurno1;
-        actualizarContTurnos(nroTurnoActual);
-        nroColumnas = grillaGuardada1.length > 0 ? grillaGuardada1[0].length : 50;
-        nroFila = grillaGuardada1.length  > 0 ? grillaGuardada1.length : 30;
-        actualizarTamanioGrilla(nroColumnas, nroFila, grillaGuardada1);
-      }
-  
-      if(nroGrillaGuardada === 2){
-        grillaGuardada2 = JSON.parse(localStorage.getItem('grilla2'));
-        nroTurno2 = parseInt(localStorage.getItem('nroTurno2'));
-        nroTurnoActual = nroTurno2;
-        actualizarContTurnos(nroTurnoActual);
-        nroColumnas = grillaGuardada2.length > 0 ? grillaGuardada2[0].length : 50;
-        nroFila = grillaGuardada2.length  > 0 ? grillaGuardada2.length : 30;
-        actualizarTamanioGrilla(nroColumnas, nroFila, grillaGuardada2);
-      }
-  
-      if(nroGrillaGuardada === 3){
-        grillaGuardada3 = JSON.parse(localStorage.getItem('grilla3'));
-        nroTurno3 = parseInt(localStorage.getItem('nroTurno3'));
-        nroTurnoActual = nroTurno3;
-        actualizarContTurnos(nroTurnoActual);
-        nroColumnas = grillaGuardada3.length > 0 ? grillaGuardada3[0].length : 50;
-        nroFila = grillaGuardada3.length  > 0 ? grillaGuardada3.length : 30;
-        actualizarTamanioGrilla(nroColumnas, nroFila, grillaGuardada3);
-      }
+      let nroFila, nroColumnas;
+      let grillaGuardada = JSON.parse(localStorage.getItem('grilla'+nroGrillaGuardada));
+      let nroTurno = parseInt(localStorage.getItem('nroTurno'+nroGrillaGuardada));
+      actualizarContTurnos(nroTurno);
+      nroColumnas = grillaGuardada.length > 0 ? grillaGuardada[0].length : 50;
+      nroFila = grillaGuardada.length  > 0 ? grillaGuardada.length : 30;
+      actualizarTamanioGrilla(nroColumnas, nroFila, grillaGuardada);
     }
   }
 
