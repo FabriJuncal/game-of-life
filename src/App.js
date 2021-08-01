@@ -10,6 +10,8 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
+import BtnGuardarCargar from '../src/components/BtnGuardarCargar';
+
 // Se define las operaciones para poder indentificar las células vecinas
 // Si realizamos una suma con cada uno de estos array con la posición en la que estamos ubicados, obtendremos las posiciones de las 8 células vecinas que puede tener cada una de estas
 // Ejemplo:
@@ -88,9 +90,7 @@ function App() {
   const [cantColumnas, actualizarCantColumnas] = useState(cantColumnasInicial);
   const [cantFila, actualizarCantFila] = useState(cantFilaInicial);
   const [grilla, actualizarGrilla] = useState(grillaAux);
-  const [grillaSeleccionado1, actGrillaSeleccionado1] = useState(true);
-  const [grillaSeleccionado2, actGrillaSeleccionado2] = useState(false);
-  const [grillaSeleccionado3, actGrillaSeleccionado3] = useState(false);
+  const [grillaSeleccionado, actGrillaSeleccionado] = useState(1);
   const [recorrido, actualizarRecorrido] = useState(false);
   const [tiempoTurno, actualizarTiempoTurno] = useState(300);
   const [contadorTurnos, actualizarContTurnos] = useState(0);
@@ -332,63 +332,39 @@ function App() {
                   Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
                   y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
               */}
-              <Button variant={grillaSeleccionado1 ? 'contained' : 'outlined'} color='primary'
-                onClick={()=>{
-                  if(grillaSeleccionado1){
-                    guardarCargarGrilla(1, 'guardar');
-                  }else if(!grillaSeleccionado1 && grillaGuardada1.length === 0){
-                    guardarCargarGrilla(1, 'guardar');
-                  }else if(!grillaSeleccionado1 && grillaGuardada1.length > 0){
-                    guardarCargarGrilla(1, 'cargar');
-                  }
-                  actGrillaSeleccionado1(true);
-                  actGrillaSeleccionado2(false);
-                  actGrillaSeleccionado3(false);
-
-                }}
-              >{grillaSeleccionado1 ? 'Guardar 1' : 'Cargar 1'}</Button>
+              <BtnGuardarCargar
+                nroGrilla={1}
+                grillaSeleccionado={grillaSeleccionado}
+                actGrillaSeleccionado={actGrillaSeleccionado}
+                guardarCargarGrilla={guardarCargarGrilla}
+                actualizarRecorrido={actualizarRecorrido}
+              />
             </Grid>
             <Grid item xs={3}>
               {/* Slot 2 para cargar o almacenar la Grilla en el Local Storage
                   Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
                   y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
               */}
-                <Button variant={grillaSeleccionado2 ? 'contained' : 'outlined'} color='primary'
-                  onClick={()=>{
-                    if(grillaSeleccionado2){
-                      guardarCargarGrilla(2, 'guardar');
-                    }else if(!grillaSeleccionado2 && grillaGuardada2.length === 0){
-                      guardarCargarGrilla(2, 'guardar');
-                    }else if(!grillaSeleccionado2 && grillaGuardada2.length > 0){
-                      guardarCargarGrilla(2, 'cargar');
-                    }
-                    actGrillaSeleccionado1(false);
-                    actGrillaSeleccionado2(true);
-                    actGrillaSeleccionado3(false);
-                    actualizarRecorrido(false);
-                  }}
-                >{grillaSeleccionado2 ? 'Guardar 2' : (grillaGuardada2.length === 0 ? 'Guardar 2' : 'Cargar 2') }</Button>
+              <BtnGuardarCargar
+                nroGrilla={2}
+                grillaSeleccionado={grillaSeleccionado}
+                actGrillaSeleccionado={actGrillaSeleccionado}
+                guardarCargarGrilla={guardarCargarGrilla}
+                actualizarRecorrido={actualizarRecorrido}
+              />
             </Grid>
             <Grid item xs={3}>
               {/* Slot 3 para cargar o almacenar la Grilla en el Local Storage
                   Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
                   y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
               */}
-              <Button variant={grillaSeleccionado3 ? 'contained' : 'outlined'} color='primary'
-                onClick={()=>{
-                  if(grillaSeleccionado3){
-                    guardarCargarGrilla(3, 'guardar');
-                  }else if(!grillaSeleccionado3 && grillaGuardada3.length === 0){
-                    guardarCargarGrilla(3, 'guardar');
-                  }else if(!grillaSeleccionado3 && grillaGuardada3.length > 0){
-                    guardarCargarGrilla(3, 'cargar');
-                  }
-                  actGrillaSeleccionado1(false);
-                  actGrillaSeleccionado2(false);
-                  actGrillaSeleccionado3(true);
-                  actualizarRecorrido(false);
-              }}
-            >{grillaSeleccionado3 ? 'Guardar 3' : (grillaGuardada3.length === 0 ? 'Guardar 3' : 'Cargar 3') }</Button>
+              <BtnGuardarCargar
+                nroGrilla={3}
+                grillaSeleccionado={grillaSeleccionado}
+                actGrillaSeleccionado={actGrillaSeleccionado}
+                guardarCargarGrilla={guardarCargarGrilla}
+                actualizarRecorrido={actualizarRecorrido}
+              />
           </Grid>
           </Grid>
           <Grid  item xs={2}>
