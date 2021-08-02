@@ -1,9 +1,7 @@
-import React, {useState} from "react";
+/*Componente Personalizado para Cargar o Guardar las Grillas en el LocalStorage*/
 import Button from '@material-ui/core/Button';
 
 const BtnGuardarCargar = ({nroGrilla, grillaSeleccionado, actGrillaSeleccionado, guardarCargarGrilla, actualizarRecorrido}) => {
-
-
   return(
     <Button id={"btnGuardarCargar-"+nroGrilla} variant={grillaSeleccionado === nroGrilla ? 'contained' : 'outlined'} color='primary'
       onClick={(e)=>{
@@ -26,8 +24,6 @@ const BtnGuardarCargar = ({nroGrilla, grillaSeleccionado, actGrillaSeleccionado,
       }}
    >{grillaSeleccionado === nroGrilla ? 'Guardar '+nroGrilla : 'Cargar  '+nroGrilla}</Button>
   )
-
-
 }
 
 export default BtnGuardarCargar;

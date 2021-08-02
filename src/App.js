@@ -287,7 +287,7 @@ function App() {
             <Grid item xs={3} >
               {/* Slot 1 para cargar o almacenar la Grilla en el Local Storage
                   Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
-                  y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
+                  y si ya lo tenemos seleccionado. Dependiendo de estos factores se podrá Almacenar o Cargar la grilla
               */}
               <BtnGuardarCargar
                 nroGrilla={1}
@@ -300,7 +300,7 @@ function App() {
             <Grid item xs={3}>
               {/* Slot 2 para cargar o almacenar la Grilla en el Local Storage
                   Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
-                  y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
+                  y si ya lo tenemos seleccionado. Dependiendo de estos factores se podrá Almacenar o Cargar la grilla
               */}
               <BtnGuardarCargar
                 nroGrilla={2}
@@ -313,7 +313,7 @@ function App() {
             <Grid item xs={3}>
               {/* Slot 3 para cargar o almacenar la Grilla en el Local Storage
                   Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
-                  y si ya lo tenemos seleccionado, dependiendo de estos factores se podrá Almacenar o Cargar la grilla
+                  y si ya lo tenemos seleccionado. Dependiendo de estos factores se podrá Almacenar o Cargar la grilla
               */}
               <BtnGuardarCargar
                 nroGrilla={3}
