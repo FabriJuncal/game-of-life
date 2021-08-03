@@ -1,4 +1,4 @@
-# Aplicación basado en el Juego de la Vida de Conway y desarrollado en React
+# Aplicación basado en el Juego de la Vida de Conway (Desarrollado en React)
 [¡¡¡HAGA CLICK PARA INICIAR APLICACIÓN!!!](https://fabrijuncal.github.io/game-of-life/)
 
 ![](https://raw.githubusercontent.com/FabriJuncal/game-of-life/master/public/img/Gospers_glider_gun.gif)
