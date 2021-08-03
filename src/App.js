@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
+import Hidden from '@material-ui/core/Hidden';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 // Botones personalizados de Guardar/Cargar Grilla
 import BtnGuardarCargar from '../src/components/BtnGuardarCargar';
@@ -243,20 +244,23 @@ function App() {
     <>
       <Grid container direction="column" justifyContent="center" >
         <Grid container direction="row" justifyContent="space-evenly" alignItems="center">
-          <Grid container direction="row" item xs={3} spacing={0}>
-            <Grid item xs={4}
-            style={{marginRight: '-10px'}}
-            >
+        <Hidden lgUp>
+          <Typography id="discrete-slider-small-steps" gutterBottom>
+              Simulación
+          </Typography>
+        </Hidden>
+          <Grid container direction="row" justifyContent="center" item lg={3}  spacing={1}>
+            <Grid item lg={4} >
             {/* Botón de Empezar/Parar simulación
                 Al hacer click sobre el botón, este detecta si se se quiere empezar la simulación o se quiere parar
             */}
               <Button variant="contained" color="primary"
                 disabled={cantColumnas === 0 || cantFila === 0 ? true : false}
                 onClick={()=>{actEstadoBtnSimulacion()}}
-                style={{width: '98.4px'}}
+                style={{width: '100%'}}
               >{recorrido ? 'Parar' : 'Empezar'}</Button>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item lg={4} >
             {/* Botón de Siguiente Turno
                 Al hacer click sobre el botón, se avanza al siguiente turno en la simulación
             */}
@@ -270,7 +274,7 @@ function App() {
                   }}
               ><NavigateNextIcon/></Button>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item lg={4} >
             {/* Botón Restablecer Células y dimensión de la Grilla
                 Al hacer click sobre el botón, este restablece las células y el tamaño de la grilla a los valores predefinidos al inicio
             */}
@@ -283,8 +287,13 @@ function App() {
               >Restablecer</Button>
             </Grid>
           </Grid>
-          <Grid container direction="row" justifyContent="center" item xs={4} spacing={6}>
-            <Grid item xs={3} >
+          <Hidden lgUp>
+            <Typography id="discrete-slider-small-steps" gutterBottom>
+              Grillas
+            </Typography>
+          </Hidden>
+          <Grid container direction="row" justifyContent="center" item lg={4}  spacing={6}>
+            <Grid item lg={3}  >
               {/* Slot 1 para cargar o almacenar la Grilla en el Local Storage
                   Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
                   y si ya lo tenemos seleccionado. Dependiendo de estos factores se podrá Almacenar o Cargar la grilla
@@ -297,7 +306,7 @@ function App() {
                 actualizarRecorrido={actualizarRecorrido}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item lg={3} >
               {/* Slot 2 para cargar o almacenar la Grilla en el Local Storage
                   Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
                   y si ya lo tenemos seleccionado. Dependiendo de estos factores se podrá Almacenar o Cargar la grilla
@@ -310,7 +319,7 @@ function App() {
                 actualizarRecorrido={actualizarRecorrido}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item lg={3} >
               {/* Slot 3 para cargar o almacenar la Grilla en el Local Storage
                   Al hacer click sobre el botón este verificará que el Slot se encuentre vació o no,
                   y si ya lo tenemos seleccionado. Dependiendo de estos factores se podrá Almacenar o Cargar la grilla
@@ -324,7 +333,7 @@ function App() {
               />
           </Grid>
           </Grid>
-          <Grid  item xs={2}>
+          <Grid  item lg={2} >
               {/* Slider para configurar el tiempo de ejecución de la simulación */}
               <Typography id="discrete-slider-small-steps" gutterBottom>
               Tiempo de Ejecución
@@ -350,13 +359,13 @@ function App() {
                 }}
               />
           </Grid>
-          <Grid container direction="column" alignItems="center" item xs={3}>
+          <Grid container direction="column" alignItems="center" item lg={3} >
           {/* Campos para configurar el Tamaño de la Grilla */}
             <Typography id="discrete-slider-small-steps" gutterBottom>
             Tamaño de la Grilla
             </Typography>
             <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
-              <Grid item xs={5}>
+              <Grid item lg={5} >
                 <TextField id="n-filas" label="Filas"
                   type="number"
                   value={cantFila}
@@ -369,7 +378,7 @@ function App() {
                   }}
                 />
               </Grid>
-              <Grid item xs={5}>
+              <Grid item lg={5} >
                 <TextField  id="n-columnas" label="Columnas" 
                   type="number"
                   value={cantColumnas}
@@ -390,7 +399,7 @@ function App() {
             </Typography>
           </Grid>  
         <Grid container direction="column" alignContent="center">
-          <Grid id="grillaSimulacion"  item xs>
+          <Grid id="grillaSimulacion"  item lg>
             {/* Grilla donde se verán el conjunto de células */}
             <div
               // Una vez que tenemos la 1er columna armada utilizamos Grid para repetir/crear la cantidad de Columnas que se asignó
@@ -418,7 +427,7 @@ function App() {
               )}
             </div>
           </Grid> 
-        </Grid>
+         </Grid>
       </Grid>
     </>
   );
