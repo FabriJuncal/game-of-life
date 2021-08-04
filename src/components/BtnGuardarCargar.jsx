@@ -2,10 +2,6 @@
 import Button from '@material-ui/core/Button';
 
 const BtnGuardarCargar = ({nroGrilla, grillaSeleccionado, actGrillaSeleccionado, guardarCargarGrilla, actualizarRecorrido}) => {
-  console.log("==============================================");
-  console.log(grillaSeleccionado);
-  console.log(nroGrilla);
-
   const grillaGuardada = JSON.parse(localStorage.getItem('grilla'+nroGrilla)) ? JSON.parse(localStorage.getItem('grilla'+nroGrilla)) : [];
   let operacion, texto;
 
