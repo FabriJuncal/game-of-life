@@ -44,18 +44,10 @@ function App() {
     // Se pausa la simulación para no generar ningún error al modificar las dimensiones de la grilla
     actualizarRecorrido(false);
 
-    // Si la cantidad de columnas o filas es igual a cero, oculta la grilla de simulación
-    // en caso contrario, lo muestra
-    if(p_cantColumnas === 0 || p_cantFilas === 0){
-      document.getElementById('grillaSimulacion').hidden = true
-    }else{
-      document.getElementById('grillaSimulacion').hidden = false
-    }
-
     grillaBase = p_grilla;
     
-    let nroColumnas = parseInt(p_cantColumnas != null ? p_cantColumnas : 0);
-    let nroFilas = parseInt(p_cantFilas != null ? p_cantFilas : 0);
+    let nroColumnas = parseInt(p_cantColumnas != null ? p_cantColumnas : 1);
+    let nroFilas = parseInt(p_cantFilas != null ? p_cantFilas : 1);
 
     actualizarCantColumnas(nroColumnas);
     actualizarCantFila(nroFilas);
@@ -70,6 +62,9 @@ function App() {
         // Cargamos las Columnas dentro de cada Fila
         grillaBase.push(arrayColumnas);
         actualizarGrilla(grillaBase);
+        // Reiniciamos el contador de turnos
+        actualizarContTurnos(0);
+        nroTurnoActual = 0;
       }
     }else{
       actualizarGrilla(grillaBase);
@@ -106,8 +101,8 @@ function App() {
 
     if(operacion === 'cargar'){
       let nroFila, nroColumnas;
-      let grillaGuardada = JSON.parse(localStorage.getItem('grilla'+nroGrillaGuardada));
-      let nroTurno = parseInt(localStorage.getItem('nroTurno'+nroGrillaGuardada));
+      let grillaGuardada = JSON.parse(localStorage.getItem('grilla'+nroGrillaGuardada)) ? JSON.parse(localStorage.getItem('grilla'+nroGrillaGuardada)) : [];
+      let nroTurno = parseInt(localStorage.getItem('nroTurno'+nroGrillaGuardada)) > 0 ? parseInt(localStorage.getItem('nroTurno'+nroGrillaGuardada)) : 0;
       actualizarContTurnos(nroTurno);
       nroColumnas = grillaGuardada.length > 0 ? grillaGuardada[0].length : 50;
       nroFila = grillaGuardada.length  > 0 ? grillaGuardada.length : 30;
@@ -197,37 +192,16 @@ function App() {
     },
     [cantColumnas,cantFila, tiempoTurno, contadorTurnos]);
 
-
-
-
 // ===============================================================================================================================
-  /* 
-    Este código crea las Columnas y Filas con un valor 0 para cada Célula (Es decir, carga la grilla con células muertas).
-    Tambien carga las grillas almacenadas en el Local Storage.
-    Si una grilla se encuentra almacenada en el Slot 1, esta se cargará de forma predeterminada al recargar la página.
-  */
+  /* Este código inicializa la grilla con los valores preestablecidos */
 
-  // Cargamos las grillas almacenadas en el Local Storage
-  let grillaBase = JSON.parse(localStorage.getItem('grilla1')) ? JSON.parse(localStorage.getItem('grilla1')) : [];
-  let nroTurno1 = localStorage.getItem('nroTurno1') ? parseInt(localStorage.getItem('nroTurno1')) : 0;
-
-  let nroTurnoActual = nroTurno1;
-
-  if(grillaBase.length === 0){
-    localStorage.setItem('grilla1', JSON.stringify([]));
-  }
-
-  let cantColumnasInicial = grillaBase.length > 0 ? grillaBase[0].length : 50;
-  let cantFilaInicial = grillaBase.length  > 0 ? grillaBase.length : 30;
-
+  let grillaBase = [];
+  let nroTurnoActual = 0;
 
   useEffect(()=>{
-    actualizarTamanioGrilla(cantColumnasInicial, cantFilaInicial, grillaBase)
+    actualizarTamanioGrilla(50,30);
   }, []);
 
-
-
-  
 // ===============================================================================================================================
   return (
 
@@ -361,7 +335,7 @@ function App() {
                   value={cantFila}
                   helperText="Valores permitidos entre 0 y 100"
                   onChange={(e) => {
-                    if( 0 <= e.target.value && e.target.value <= 100){
+                    if( 1 <= e.target.value && e.target.value <= 100){
                       actualizarTamanioGrilla(cantColumnas, e.target.value ? e.target.value : 0);
                     }
 
@@ -374,7 +348,7 @@ function App() {
                   value={cantColumnas}
                   helperText="Valores permitidos entre 0 y 100"
                   onChange={(e) => {
-                    if( 0 <= e.target.value && e.target.value <= 100){
+                    if( 1 <= e.target.value && e.target.value <= 100){
                       actualizarTamanioGrilla(e.target.value ? e.target.value : 0, cantFila);
                     }
                   }}
