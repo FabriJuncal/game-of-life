@@ -333,7 +333,7 @@ function App() {
                 <TextField id="n-filas" label="Filas"
                   type="number"
                   value={cantFila}
-                  helperText="Valores permitidos entre 0 y 100"
+                  helperText="Valores permitidos entre 1 y 100"
                   onChange={(e) => {
                     if( 1 <= e.target.value && e.target.value <= 100){
                       actualizarTamanioGrilla(cantColumnas, e.target.value ? e.target.value : 0);
@@ -346,7 +346,7 @@ function App() {
                 <TextField  id="n-columnas" label="Columnas" 
                   type="number"
                   value={cantColumnas}
-                  helperText="Valores permitidos entre 0 y 100"
+                  helperText="Valores permitidos entre 1 y 100"
                   onChange={(e) => {
                     if( 1 <= e.target.value && e.target.value <= 100){
                       actualizarTamanioGrilla(e.target.value ? e.target.value : 0, cantFila);
