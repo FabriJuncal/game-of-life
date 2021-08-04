@@ -23,7 +23,7 @@ siguiente estará viva).
  ![](https://raw.githubusercontent.com/FabriJuncal/game-of-life/master/public/img/algunos-patrones.JPG)
 
 ## Interfaz de la Aplicación
- ![](https://raw.githubusercontent.com/FabriJuncal/game-of-life/master/public/img/interfazApp.JPG)
+ ![](https://raw.githubusercontent.com/FabriJuncal/game-of-life/master/public/img/interfazApp.PNG)
 
 La interfaz fue desarrollada con los componentes de [MATERIAL-UI](https://material-ui.com/)
 
