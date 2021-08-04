@@ -1,4 +1,4 @@
-import React, {useState, useRef, useCallback} from "react";
+import React, {useState, useRef, useEffect, useCallback} from "react";
 // La librería Immer ayudará a seguir el paradigma de datos inmutables
 // y hará que la actualización de un Estado sea mucho mas sencilla
 import produce from "immer";
@@ -34,50 +34,92 @@ const operaciones = [
 ]
 
 function App() {
-// ===============================================================================================================================
-  /* 
-    Este código crea las Columnas y Filas con un valor 0 para cada Célula (Es decir, carga la grilla con células muertas).
-    Tambien carga las grillas almacenadas en el Local Storage.
-    Si una grilla se encuentra almacenada en el Slot 1, esta se cargará de forma predeterminada al recargar la página.
-  */
 
-  // Cargamos las grillas almacenadas en el Local Storage
-  let grillaGuardada1 = JSON.parse(localStorage.getItem('grilla1')) ? JSON.parse(localStorage.getItem('grilla1')) : [];
-  let nroTurno1 = localStorage.getItem('nroTurno1') ? parseInt(localStorage.getItem('nroTurno1')) : 0;
+// =============================================================================================================================== 
+/*Definición de Funciones*/
 
-  let nroTurnoActual = nroTurno1;
+  // Función que se utiliza para actualizar el tamaño de la grilla cada vez que se modifican los valores de las Filas y Columnas
+  const actualizarTamanioGrilla = (p_cantColumnas, p_cantFilas, p_grilla = []) => {
+  
+    // Se pausa la simulación para no generar ningún error al modificar las dimensiones de la grilla
+    actualizarRecorrido(false);
 
-  if(grillaGuardada1.length === 0){
-    localStorage.setItem('grilla1', JSON.stringify([]));
+    // Si la cantidad de columnas o filas es igual a cero, oculta la grilla de simulación
+    // en caso contrario, lo muestra
+    if(p_cantColumnas === 0 || p_cantFilas === 0){
+      document.getElementById('grillaSimulacion').hidden = true
+    }else{
+      document.getElementById('grillaSimulacion').hidden = false
+    }
+
+    grillaBase = p_grilla;
+    
+    let nroColumnas = parseInt(p_cantColumnas != null ? p_cantColumnas : 0);
+    let nroFilas = parseInt(p_cantFilas != null ? p_cantFilas : 0);
+
+    actualizarCantColumnas(nroColumnas);
+    actualizarCantFila(nroFilas);
+
+    // Si se pasa como parametro una grilla cargada, no se vuelven a generar las Filas y Columnas
+    if( grillaBase.length === 0){
+      // Iteramos sobre el la cantidad de Filas
+      for (let i = 0; i < (nroFilas); i++){
+  
+        // Creamos la cantidad de Columnas asignadas con el valor 0
+        let arrayColumnas = Array.from(Array(nroColumnas), () => 0);
+        // Cargamos las Columnas dentro de cada Fila
+        grillaBase.push(arrayColumnas);
+        actualizarGrilla(grillaBase);
+      }
+    }else{
+      actualizarGrilla(grillaBase);
+    }
+
   }
 
-  let grillaBase = [];
-  let grillaAux;
-
-
-  let cantColumnasInicial = grillaGuardada1.length > 0 ? grillaGuardada1[0].length : 50;
-  let cantFilaInicial = grillaGuardada1.length  > 0 ? grillaGuardada1.length : 30;
-
-  // Iteramos sobre la cantidad de Filas definidas para ir cargando las columnas en cada una de las filas
-  for (let i = 0; i < cantFilaInicial; i++){
-
-    // A cada valor del array de Columnas le agrega el valor 0
-    let arrayColumnas = Array.from(Array(cantColumnasInicial), () => 0);
-    // Cargamos las Columnas dentro de cada Fila y de esta manera se va armando la grilla
-    grillaBase.push(arrayColumnas);
+  // Función que se utiliza para actualizar el estado de la Grilla (Es decir, con esta función podemos seleccionar cada célular e ir reviviendolas o matandolas)
+  const actualizarEstadoGrilla = (i,j) => {
+      // Utilizamos la función "produce" de la librería "Immer" para actualizar el estado "grilla" de una manera muy sensilla
+      const nuevaGrilla = produce(grilla, grillaCopia => {
+        // Si la posición de la grilla que pasamos como parametro tiene un valor de 1, este se actualiza 0 y viceversa
+        grillaCopia[i][j] = grillaCopia[i][j] > 0 ? 0 : 1;
+      });
+      actualizarGrilla(nuevaGrilla);
   }
 
-  // En el caso que se encuentre la grilla 1 almacenada en el Local Storage, se carga automaticamente
-  if(grillaGuardada1.length > 0){
-    grillaAux = grillaGuardada1;
-  }else{ // Sino se carga la grilla predefinida sin células vivas
-    grillaAux = grillaBase;
+  // Función que Inicia o Detiene la Simulación
+  const actEstadoBtnSimulacion = () => {
+    actualizarRecorrido(!recorrido);
+    if(!recorrido){
+      recorridoRef.current = true;
+      correrSimulación();
+    }
   }
-  // ===============================================================================================================================
+
+  // Función que Carga o Almacena las grillas y el contador de turnos en el Local Storage según el Slot que se haya seleccionado
+  const guardarCargarGrilla = (nroGrillaGuardada, operacion) => {
+
+    if(operacion === 'guardar'){
+        localStorage.setItem('grilla'+nroGrillaGuardada, JSON.stringify(grilla));
+        localStorage.setItem('nroTurno'+nroGrillaGuardada, contadorTurnos);
+    }
+
+    if(operacion === 'cargar'){
+      let nroFila, nroColumnas;
+      let grillaGuardada = JSON.parse(localStorage.getItem('grilla'+nroGrillaGuardada));
+      let nroTurno = parseInt(localStorage.getItem('nroTurno'+nroGrillaGuardada));
+      actualizarContTurnos(nroTurno);
+      nroColumnas = grillaGuardada.length > 0 ? grillaGuardada[0].length : 50;
+      nroFila = grillaGuardada.length  > 0 ? grillaGuardada.length : 30;
+      actualizarTamanioGrilla(nroColumnas, nroFila, grillaGuardada);
+    }
+  }
+
+  // =============================================================================================================================== 
   /*Definición de Hooks*/
-  const [cantColumnas, actualizarCantColumnas] = useState(cantColumnasInicial);
-  const [cantFila, actualizarCantFila] = useState(cantFilaInicial);
-  const [grilla, actualizarGrilla] = useState(grillaAux);
+  const [cantColumnas, actualizarCantColumnas] = useState(0);
+  const [cantFila, actualizarCantFila] = useState(0);
+  const [grilla, actualizarGrilla] = useState([]);
   const [grillaSeleccionado, actGrillaSeleccionado] = useState(1);
   const [recorrido, actualizarRecorrido] = useState(false);
   const [tiempoTurno, actualizarTiempoTurno] = useState(300);
@@ -159,85 +201,33 @@ function App() {
 
 
 // ===============================================================================================================================
-/*Definición de Funciones*/
+  /* 
+    Este código crea las Columnas y Filas con un valor 0 para cada Célula (Es decir, carga la grilla con células muertas).
+    Tambien carga las grillas almacenadas en el Local Storage.
+    Si una grilla se encuentra almacenada en el Slot 1, esta se cargará de forma predeterminada al recargar la página.
+  */
 
-  // Función que se utiliza para actualizar el tamaño de la grilla cada vez que se modifican los valores de las Filas y Columnas
-  const actualizarTamanioGrilla = (p_cantColumnas, p_cantFilas, p_grilla = []) => {
+  // Cargamos las grillas almacenadas en el Local Storage
+  let grillaBase = JSON.parse(localStorage.getItem('grilla1')) ? JSON.parse(localStorage.getItem('grilla1')) : [];
+  let nroTurno1 = localStorage.getItem('nroTurno1') ? parseInt(localStorage.getItem('nroTurno1')) : 0;
+
+  let nroTurnoActual = nroTurno1;
+
+  if(grillaBase.length === 0){
+    localStorage.setItem('grilla1', JSON.stringify([]));
+  }
+
+  let cantColumnasInicial = grillaBase.length > 0 ? grillaBase[0].length : 50;
+  let cantFilaInicial = grillaBase.length  > 0 ? grillaBase.length : 30;
+
+
+  useEffect(()=>{
+    actualizarTamanioGrilla(cantColumnasInicial, cantFilaInicial, grillaBase)
+  }, []);
+
+
+
   
-    // Se pausa la simulación para no generar ningún error al modificar las dimensiones de la grilla
-    actualizarRecorrido(false);
-
-    // Si la cantidad de columnas o filas es igual a cero, oculta la grilla de simulación
-    // en caso contrario, lo muestra
-    if(p_cantColumnas === 0 || p_cantFilas === 0){
-      document.getElementById('grillaSimulacion').hidden = true
-    }else{
-      document.getElementById('grillaSimulacion').hidden = false
-    }
-
-    grillaBase = p_grilla;
-    
-    let nroColumnas = parseInt(p_cantColumnas != null ? p_cantColumnas : 0);
-    let nroFilas = parseInt(p_cantFilas != null ? p_cantFilas : 0);
-
-    actualizarCantColumnas(nroColumnas);
-    actualizarCantFila(nroFilas);
-
-    // Si se pasa como parametro una grilla cargada, no se vuelven a generar las Filas y Columnas
-    if( grillaBase.length === 0){
-      // Iteramos sobre el la cantidad de Filas
-      for (let i = 0; i < (nroFilas); i++){
-  
-        // Creamos la cantidad de Columnas asignadas con el valor 0
-        let arrayColumnas = Array.from(Array(nroColumnas), () => 0);
-        // Cargamos las Columnas dentro de cada Fila
-        grillaBase.push(arrayColumnas);
-        actualizarGrilla(grillaBase);
-      }
-    }else{
-      actualizarGrilla(grillaBase);
-    }
-
-  }
-
-  // Función que se utiliza para actualizar el estado de la Grilla (Es decir, con esta función podemos seleccionar cada célular e ir reviviendolas o matandolas)
-  const actualizarEstadoGrilla = (i,j) => {
-      // Utilizamos la función "produce" de la librería "Immer" para actualizar el estado "grilla" de una manera muy sensilla
-      const nuevaGrilla = produce(grilla, grillaCopia => {
-        // Si la posición de la grilla que pasamos como parametro tiene un valor de 1, este se actualiza 0 y viceversa
-        grillaCopia[i][j] = grillaCopia[i][j] > 0 ? 0 : 1;
-      });
-      actualizarGrilla(nuevaGrilla);
-  }
-
-  // Función que Inicia o Detiene la Simulación
-  const actEstadoBtnSimulacion = () => {
-    actualizarRecorrido(!recorrido);
-    if(!recorrido){
-      recorridoRef.current = true;
-      correrSimulación();
-    }
-  }
-
-  // Función que Carga o Almacena las grillas y el contador de turnos en el Local Storage según el Slot que se haya seleccionado
-  const guardarCargarGrilla = (nroGrillaGuardada, operacion) => {
-
-    if(operacion === 'guardar'){
-        localStorage.setItem('grilla'+nroGrillaGuardada, JSON.stringify(grilla));
-        localStorage.setItem('nroTurno'+nroGrillaGuardada, contadorTurnos);
-    }
-
-    if(operacion === 'cargar'){
-      let nroFila, nroColumnas;
-      let grillaGuardada = JSON.parse(localStorage.getItem('grilla'+nroGrillaGuardada));
-      let nroTurno = parseInt(localStorage.getItem('nroTurno'+nroGrillaGuardada));
-      actualizarContTurnos(nroTurno);
-      nroColumnas = grillaGuardada.length > 0 ? grillaGuardada[0].length : 50;
-      nroFila = grillaGuardada.length  > 0 ? grillaGuardada.length : 30;
-      actualizarTamanioGrilla(nroColumnas, nroFila, grillaGuardada);
-    }
-  }
-
 // ===============================================================================================================================
   return (
 
